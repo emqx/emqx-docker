@@ -1,9 +1,6 @@
 FROM debian:buster-slim
 
-ENV EMQX_MAJOR 4.3
-ENV EMQX_VERSION 4.3.5
-
-RUN groupadd -r emqx && useradd -r -g emqx emqx
+RUN groupadd -r -g 1000 emqx && useradd -r -u 1000 -g emqx emqx
 
 RUN set -eu; \
     apt-get update; \
@@ -20,6 +17,7 @@ RUN set -eu; \
     gpgconf --kill all; \
     rm -rf "$GNUPGHOME"
 
+ENV EMQX_VERSION 4.3.5
 RUN set -eu; \
     echo "deb [signed-by=/etc/apt/keyrings/emqx.gpg] https://repos.emqx.io/emqx-ce/deb/debian/ ./buster stable" >> /etc/apt/sources.list.d/emqx.list; \
     apt-get update; \
