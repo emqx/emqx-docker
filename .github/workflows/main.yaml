@@ -35,7 +35,7 @@ jobs:
       - uses: docker/build-push-action@v2
         if: matrix.version == '4.3'
         with:
-          push: ${{ github.ref_name == 'main' }}
+          push: true
           pull: true
           no-cache: true
           platforms: linux/amd64
@@ -45,7 +45,7 @@ jobs:
       - uses: docker/build-push-action@v2
         if: matrix.version == '4.4'
         with:
-          push: ${{ github.ref_name == 'main' }}
+          push: true
           pull: true
           no-cache: true
           platforms: linux/amd64,linux/arm64
@@ -60,5 +60,13 @@ jobs:
             echo "waiting for emqx"
             sleep 1
           done
+          if ! docker exec -i emqx emqx ping; then
+            echo "emqx command not working"
+            exit 1
+          fi
+          if ! docker exec -i emqx emqx_ctl status; then
+            echo "emqx_ctl command not working"
+            exit 1
+          fi
           echo "================================================================"
           echo "emqx is running"

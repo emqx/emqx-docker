@@ -1,6 +1,6 @@
 FROM debian:buster-slim
 
-RUN groupadd -r -g 1000 emqx && useradd -r -u 1000 -g emqx emqx
+RUN groupadd -r -g 1000 emqx && useradd -r -m -u 1000 -g emqx emqx
 
 RUN set -eu; \
     apt-get update; \
