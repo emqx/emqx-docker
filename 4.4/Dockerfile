@@ -1,10 +1,8 @@
 FROM debian:11-slim
 
-RUN groupadd -r -g 1000 emqx && useradd -r -u 1000 -g emqx emqx
-
 RUN set -eu; \
     apt-get update; \
-    apt-get install -y --no-install-recommends wget unzip ca-certificates; \
+    apt-get install -y --no-install-recommends curl unzip ca-certificates; \
     rm -rf /var/lib/apt/lists/*
 
 ENV EMQX_VERSION 4.4.2
@@ -16,14 +14,18 @@ RUN set -eu; \
     if [ ${arch} = "amd64" ]; then sha256="bbeb72effcbebab56a3331bdd51dbf5810121d9b2bc57a294d49e97bd9eed7f4"; fi; \
     if [ ${arch} = "arm64" ]; then sha256="13f6bc6b218f837bb8e7353e5470190152a8c8e19780762ad7fd0c828ef6fb29"; fi; \
     pkg="emqx-${EMQX_VERSION}-${OTP}-${OS}-${arch}.zip"; \
-    wget --no-verbose https://www.emqx.com/en/downloads/broker/${EMQX_VERSION}/${pkg}; \
+    curl -O -L https://www.emqx.com/en/downloads/broker/${EMQX_VERSION}/${pkg}; \
     echo "$sha256 $pkg" | sha256sum -c || exit 1; \
     unzip -q -d /opt $pkg; \
     ln -s /opt/emqx/bin/* /usr/local/bin/; \
     rm -rf $pkg
 
-RUN chgrp -Rf emqx /opt/emqx && chmod -Rf g+w /opt/emqx \
-    && chown -Rf emqx /opt/emqx
+RUN set -eu; \
+    groupadd -r -g 1000 emqx; \
+    useradd -r -m -u 1000 -g emqx emqx; \
+    chgrp -Rf emqx /opt/emqx; \
+    chmod -Rf g+w /opt/emqx; \
+    chown -Rf emqx /opt/emqx
 
 WORKDIR /opt/emqx
 
