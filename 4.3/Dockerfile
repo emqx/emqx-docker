@@ -26,7 +26,7 @@ RUN set -eu; \
 
 USER emqx
 
-VOLUME ["/opt/emqx/log", "/opt/emqx/data"]
+VOLUME ["/var/log/emqx", "/var/lib/emqx"]
 
 # emqx will occupy these port:
 # - 1883 port for MQTT
