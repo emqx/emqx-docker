@@ -7,15 +7,16 @@ RUN set -eu; \
 
 ENV EMQX_VERSION 4.4.2
 ENV OTP otp24.1.5-3
-ENV OS debian11
 
 RUN set -eu; \
     arch=$(dpkg --print-architecture); \
     if [ ${arch} = "amd64" ]; then sha256="bbeb72effcbebab56a3331bdd51dbf5810121d9b2bc57a294d49e97bd9eed7f4"; fi; \
     if [ ${arch} = "arm64" ]; then sha256="13f6bc6b218f837bb8e7353e5470190152a8c8e19780762ad7fd0c828ef6fb29"; fi; \
-    pkg="emqx-${EMQX_VERSION}-${OTP}-${OS}-${arch}.zip"; \
-    curl -O -L https://www.emqx.com/en/downloads/broker/${EMQX_VERSION}/${pkg}; \
-    echo "$sha256 $pkg" | sha256sum -c || exit 1; \
+    ID="$(sed -n '/^ID=/p' /etc/os-release | sed -r 's/ID=(.*)/\1/g' | sed 's/\"//g')"; \
+    VERSION_ID="$(sed -n '/^VERSION_ID=/p' /etc/os-release | sed -r 's/VERSION_ID=(.*)/\1/g' | sed 's/\"//g')"; \
+    pkg="emqx-${EMQX_VERSION}-${OTP}-${ID}${VERSION_ID}-${arch}.zip"; \
+    curl -f -O -L https://www.emqx.com/en/downloads/broker/${EMQX_VERSION}/${pkg}; \
+    echo "$sha256 *$pkg" | sha256sum -c || exit 1; \
     unzip -q -d /opt $pkg; \
     ln -s /opt/emqx/bin/* /usr/local/bin/; \
     rm -rf $pkg

@@ -26,8 +26,6 @@ RUN set -eu; \
 
 USER emqx
 
-VOLUME ["/var/log/emqx", "/var/lib/emqx"]
-
 # emqx will occupy these port:
 # - 1883 port for MQTT
 # - 8081 for mgmt API
