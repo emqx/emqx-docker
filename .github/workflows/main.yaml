@@ -18,12 +18,6 @@ jobs:
         version:
           - 4.3
           - 4.4
-        os:
-          - debian
-          - alpine
-        exclude:
-          - version: 4.3
-            os: alpine
 
     steps:
       - uses: actions/checkout@v2
@@ -38,34 +32,30 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ github.token }}
-      - name: Get metadata
-        id: metadata
-        run: |
-          if [ "${{ matrix.version }}" == "4.3" ]; then
-            echo "::set-output name=platform::linux/amd64"
-          else
-            echo "::set-output name=platform::linux/amd64,linux/arm64"
-          fi
-          if [ "${{ matrix.os }}" == "alpine" ]; then
-            echo "::set-output name=dockerfile::Dockerfile.alpine"
-            echo "::set-output name=tag::${{ matrix.version }}-alpine"
-          else
-            echo "::set-output name=dockerfile::Dockerfile"
-            echo "::set-output name=tag::${{ matrix.version }}"
-          fi
       - uses: docker/build-push-action@v2
+        if: matrix.version == '4.3'
         with:
           push: true
           pull: true
           no-cache: true
-          platforms: ${{ steps.metadata.outputs.platform }}
-          tags: ghcr.io/${{ github.repository }}:${{ steps.metadata.outputs.tag }}
-          file: ${{ matrix.version }}/${{ steps.metadata.outputs.dockerfile }}
+          platforms: linux/amd64
+          tags: ghcr.io/${{ github.repository }}:${{ matrix.version }}
+          file: ${{ matrix.version }}/Dockerfile
+          context: ${{ matrix.version }}
+      - uses: docker/build-push-action@v2
+        if: matrix.version == '4.4'
+        with:
+          push: true
+          pull: true
+          no-cache: true
+          platforms: linux/amd64,linux/arm64
+          tags: ghcr.io/${{ github.repository }}:${{ matrix.version }}
+          file: ${{ matrix.version }}/Dockerfile
           context: ${{ matrix.version }}
       - name: Check image
         timeout-minutes: 1
         run: |
-          docker run -d -p 8081:8081 --name emqx ghcr.io/${{ github.repository }}:${{ steps.metadata.outputs.tag }}
+          docker run -d -p 8081:8081 --name emqx ghcr.io/${{ github.repository }}:${{ matrix.version }}
           while ! curl -fs 127.0.0.1:8081/status > /dev/null; do
             echo "waiting for emqx"
             sleep 1
