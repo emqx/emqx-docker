@@ -10,8 +10,8 @@ ENV OTP otp24.1.5-3
 
 RUN set -eu; \
     arch=$(dpkg --print-architecture); \
-    if [ ${arch} = "amd64" ]; then sha256="7f7305566b977ef64afd31fed5fa71f7e79a5a934bf792422ac03e4f12768b02"; fi; \
-    if [ ${arch} = "arm64" ]; then sha256="34d3315c329de1d0fbf7419db1bff5007313f45de39e8be0ca5f04bad19f45a5"; fi; \
+    if [ ${arch} = "amd64" ]; then sha256="559706c593e50a26642bb1f402b30d663ac58f2ed15dba8380a588a26e0d8eaa"; fi; \
+    if [ ${arch} = "arm64" ]; then sha256="8ff6ce7cf33306ded9e1c240982b9c15ca077db1cb36b645fa983dabb262ae53"; fi; \
     ID="$(sed -n '/^ID=/p' /etc/os-release | sed -r 's/ID=(.*)/\1/g' | sed 's/\"//g')"; \
     VERSION_ID="$(sed -n '/^VERSION_ID=/p' /etc/os-release | sed -r 's/VERSION_ID=(.*)/\1/g' | sed 's/\"//g')"; \
     pkg="emqx-${EMQX_VERSION}-${OTP}-${ID}${VERSION_ID}-${arch}.zip"; \
