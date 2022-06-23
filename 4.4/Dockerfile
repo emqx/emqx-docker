@@ -5,13 +5,13 @@ RUN set -eu; \
     apt-get install -y --no-install-recommends curl unzip ca-certificates; \
     rm -rf /var/lib/apt/lists/*
 
-ENV EMQX_VERSION 4.4.3
+ENV EMQX_VERSION 4.4.4
 ENV OTP otp24.1.5-3
 
 RUN set -eu; \
     arch=$(dpkg --print-architecture); \
-    if [ ${arch} = "amd64" ]; then sha256="559706c593e50a26642bb1f402b30d663ac58f2ed15dba8380a588a26e0d8eaa"; fi; \
-    if [ ${arch} = "arm64" ]; then sha256="8ff6ce7cf33306ded9e1c240982b9c15ca077db1cb36b645fa983dabb262ae53"; fi; \
+    if [ ${arch} = "amd64" ]; then sha256="74a65d51ab60b044874f98e1dc4022f2932c7d70e68bc13ed5fe43be177ba515"; fi; \
+    if [ ${arch} = "arm64" ]; then sha256="6aed1583bf96b53e6355e7431204fc8b09b89ffbce580f5031a77a542c53c5e8"; fi; \
     ID="$(sed -n '/^ID=/p' /etc/os-release | sed -r 's/ID=(.*)/\1/g' | sed 's/\"//g')"; \
     VERSION_ID="$(sed -n '/^VERSION_ID=/p' /etc/os-release | sed -r 's/VERSION_ID=(.*)/\1/g' | sed 's/\"//g')"; \
     pkg="emqx-${EMQX_VERSION}-${OTP}-${ID}${VERSION_ID}-${arch}.zip"; \
