@@ -1,30 +1,37 @@
-FROM debian:buster-slim
-
-RUN groupadd -r -g 1000 emqx && useradd -r -m -u 1000 -g emqx emqx
+FROM debian:10-slim
 
 RUN set -eu; \
     apt-get update; \
-    apt-get install -y --no-install-recommends ca-certificates curl gnupg; \
+    apt-get install -y --no-install-recommends curl unzip ca-certificates; \
     rm -rf /var/lib/apt/lists/*
 
-RUN set -eu; \
-# gpg: key C0B409463E640D53: public key "emqx team <support@emqx.io>" imported
-    key='FC841BA637755CA8487B1E3CC0B409463E640D53'; \
-    export GNUPGHOME="$(mktemp -d)"; \
-    gpg --batch --keyserver keyserver.ubuntu.com --recv-keys "$key"; \
-    mkdir -p /etc/apt/keyrings; \
-    gpg --batch --export "$key" > /etc/apt/keyrings/emqx.gpg; \
-    gpgconf --kill all; \
-    rm -rf "$GNUPGHOME"
+ENV EMQX_VERSION 4.3.15
 
-ENV EMQX_VERSION 4.3.5
 RUN set -eu; \
-    echo "deb [signed-by=/etc/apt/keyrings/emqx.gpg] https://repos.emqx.io/emqx-ce/deb/debian/ ./buster stable" >> /etc/apt/sources.list.d/emqx.list; \
-    apt-get update; \
-    apt-get install -y --no-install-recommends emqx="$EMQX_VERSION"; \
-    rm -rf /var/lib/apt/lists/*
+    arch=$(dpkg --print-architecture); \
+    if [ ${arch} = "amd64" ]; then sha256="8f44386aebf472297377d7b6b595638f323227347047d5278dce9c0cd04963bc"; fi; \
+    if [ ${arch} = "arm64" ]; then sha256="b0094028d388684136be975c574d98295205dd5a343045f76f423a109535e016"; fi; \
+    ID="$(sed -n '/^ID=/p' /etc/os-release | sed -r 's/ID=(.*)/\1/g' | sed 's/\"//g')"; \
+    VERSION_ID="$(sed -n '/^VERSION_ID=/p' /etc/os-release | sed -r 's/VERSION_ID=(.*)/\1/g' | sed 's/\"//g')"; \
+    pkg="emqx-${ID}${VERSION_ID}-${EMQX_VERSION}-${arch}.zip"; \
+    curl -f -O -L https://www.emqx.com/en/downloads/broker/${EMQX_VERSION}/${pkg}; \
+    echo "$sha256 *$pkg" | sha256sum -c || exit 1; \
+    unzip -q -d /opt $pkg; \
+    ln -s /opt/emqx/bin/* /usr/local/bin/; \
+    rm -rf $pkg
+
+RUN set -eu; \
+    groupadd -r -g 1000 emqx; \
+    useradd -r -m -u 1000 -g emqx emqx; \
+    chgrp -Rf emqx /opt/emqx; \
+    chmod -Rf g+w /opt/emqx; \
+    chown -Rf emqx /opt/emqx
+
+WORKDIR /opt/emqx
 
 USER emqx
+
+VOLUME ["/opt/emqx/log", "/opt/emqx/data"]
 
 # emqx will occupy these port:
 # - 1883 port for MQTT
