@@ -16,23 +16,21 @@ jobs:
     strategy:
       matrix:
         version:
-          - 4.3
-          - 4.4
+          - '4.3'
+          - '4.4'
+          - '5.0'
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: docker/setup-buildx-action@v1
-      - uses: docker/setup-qemu-action@v1
-        with:
-          image: tonistiigi/binfmt:latest
-          platforms: all
+      - uses: actions/checkout@v3
+      - uses: docker/setup-buildx-action@v2
+      - uses: docker/setup-qemu-action@v2
       - name: Docker login
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ github.token }}
-      - uses: docker/build-push-action@v2
+      - uses: docker/build-push-action@v3
         if: matrix.version == '4.3'
         with:
           push: true
@@ -42,8 +40,8 @@ jobs:
           tags: ghcr.io/${{ github.repository }}:${{ matrix.version }}
           file: ${{ matrix.version }}/Dockerfile
           context: ${{ matrix.version }}
-      - uses: docker/build-push-action@v2
-        if: matrix.version == '4.4'
+      - uses: docker/build-push-action@v3
+        if: matrix.version != '4.3'
         with:
           push: true
           pull: true
@@ -53,10 +51,30 @@ jobs:
           file: ${{ matrix.version }}/Dockerfile
           context: ${{ matrix.version }}
       - name: Check image
+        if: matrix.version != '5.0'
         timeout-minutes: 1
         run: |
           docker run -d -p 8081:8081 --name emqx ghcr.io/${{ github.repository }}:${{ matrix.version }}
           while ! curl -fs 127.0.0.1:8081/status > /dev/null; do
+            echo "waiting for emqx"
+            sleep 1
+          done
+          if ! docker exec -i emqx emqx ping; then
+            echo "emqx command not working"
+            exit 1
+          fi
+          if ! docker exec -i emqx emqx_ctl status; then
+            echo "emqx_ctl command not working"
+            exit 1
+          fi
+          echo "================================================================"
+          echo "emqx is running"
+      - name: Check image
+        if: matrix.version == '5.0'
+        timeout-minutes: 1
+        run: |
+          docker run -d -p 18083:18083 --name emqx ghcr.io/${{ github.repository }}:${{ matrix.version }}
+          while ! curl -fs 127.0.0.1:18083/status > /dev/null; do
             echo "waiting for emqx"
             sleep 1
           done
