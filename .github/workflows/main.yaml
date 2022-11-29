@@ -16,9 +16,9 @@ jobs:
     strategy:
       matrix:
         version:
-          - 4.3
-          - 4.4
-          - 5.0
+          - '4.3'
+          - '4.4'
+          - '5.0'
 
     steps:
       - uses: actions/checkout@v3
