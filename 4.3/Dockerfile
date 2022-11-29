@@ -5,12 +5,12 @@ RUN set -eu; \
     apt-get install -y --no-install-recommends curl unzip ca-certificates; \
     rm -rf /var/lib/apt/lists/*
 
-ENV EMQX_VERSION 4.3.15
+ENV EMQX_VERSION=4.3.22
 
 RUN set -eu; \
     arch=$(dpkg --print-architecture); \
-    if [ ${arch} = "amd64" ]; then sha256="8f44386aebf472297377d7b6b595638f323227347047d5278dce9c0cd04963bc"; fi; \
-    if [ ${arch} = "arm64" ]; then sha256="b0094028d388684136be975c574d98295205dd5a343045f76f423a109535e016"; fi; \
+    if [ ${arch} = "amd64" ]; then sha256="e5f6874eb29f83cce9c84afae95cc05de11ed8aa47f046783afa1c75e812a4b7"; fi; \
+    if [ ${arch} = "arm64" ]; then sha256="85bf586fdf1c11f4057f6137faa4390100a3f3eb0e285e8a68e63c7d15bea09b"; fi; \
     ID="$(sed -n '/^ID=/p' /etc/os-release | sed -r 's/ID=(.*)/\1/g' | sed 's/\"//g')"; \
     VERSION_ID="$(sed -n '/^VERSION_ID=/p' /etc/os-release | sed -r 's/VERSION_ID=(.*)/\1/g' | sed 's/\"//g')"; \
     pkg="emqx-${ID}${VERSION_ID}-${EMQX_VERSION}-${arch}.zip"; \
