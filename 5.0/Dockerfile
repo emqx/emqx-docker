@@ -5,6 +5,9 @@ RUN set -eu; \
     apt-get install -y --no-install-recommends curl ca-certificates procps; \
     rm -rf /var/lib/apt/lists/*
 
+RUN groupadd -r -g 1000 emqx; \
+    useradd -r -m -u 1000 -g emqx emqx;
+
 ENV EMQX_VERSION=5.0.11
 ENV AMD64_SHA256=68609fcc1d74be917f9c28c57c14daabccee22361af91b6e98812a35300a1c80
 ENV ARM64_SHA256=f7c7417951beb490ed3a7347b3879db8e9e80ea214c9ef942e777c7136681d31
@@ -21,18 +24,13 @@ RUN set -eu; \
     echo "$sha256 *$pkg" | sha256sum -c || exit 1; \
     mkdir /opt/emqx; \
     tar zxf $pkg -C /opt/emqx; \
+    chgrp -Rf emqx /opt/emqx; \
+    chmod -Rf g+w /opt/emqx; \
+    chown -Rf emqx /opt/emqx; \
     ln -s /opt/emqx/bin/* /usr/local/bin/; \
     rm -f $pkg
 
-COPY docker-entrypoint.sh /usr/bin/
-
 WORKDIR /opt/emqx
-
-RUN groupadd -r -g 1000 emqx; \
-    useradd -r -m -u 1000 -g emqx emqx; \
-    chgrp -Rf emqx /opt/emqx; \
-    chmod -Rf g+w /opt/emqx; \
-    chown -Rf emqx /opt/emqx
 
 USER emqx
 
@@ -48,6 +46,8 @@ VOLUME ["/opt/emqx/log", "/opt/emqx/data"]
 # - 4370 default Erlang distribution port
 # - 5369 for backplain gen_rpc
 EXPOSE 1883 8083 8084 8883 11883 18083 4370 5369
+
+COPY docker-entrypoint.sh /usr/bin/
 
 ENTRYPOINT ["/usr/bin/docker-entrypoint.sh"]
 
