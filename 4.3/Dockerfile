@@ -5,6 +5,10 @@ RUN set -eu; \
     apt-get install -y --no-install-recommends curl unzip ca-certificates; \
     rm -rf /var/lib/apt/lists/*
 
+RUN set -eu; \
+    groupadd -r -g 1000 emqx; \
+    useradd -r -m -u 1000 -g emqx emqx
+
 ENV EMQX_VERSION=4.3.22
 
 RUN set -eu; \
@@ -17,15 +21,11 @@ RUN set -eu; \
     curl -f -O -L https://www.emqx.com/en/downloads/broker/${EMQX_VERSION}/${pkg}; \
     echo "$sha256 *$pkg" | sha256sum -c || exit 1; \
     unzip -q -d /opt $pkg; \
-    ln -s /opt/emqx/bin/* /usr/local/bin/; \
-    rm -rf $pkg
-
-RUN set -eu; \
-    groupadd -r -g 1000 emqx; \
-    useradd -r -m -u 1000 -g emqx emqx; \
     chgrp -Rf emqx /opt/emqx; \
     chmod -Rf g+w /opt/emqx; \
-    chown -Rf emqx /opt/emqx
+    chown -Rf emqx /opt/emqx; \
+    ln -s /opt/emqx/bin/* /usr/local/bin/; \
+    rm -rf $pkg
 
 WORKDIR /opt/emqx
 
