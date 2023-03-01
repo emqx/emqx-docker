@@ -56,6 +56,7 @@ jobs:
         if: matrix.version != '5.0'
         timeout-minutes: 1
         run: |
+          docker pull ghcr.io/${{ github.repository }}:${{ matrix.version }}
           docker run -d -p 8081:8081 --name emqx ghcr.io/${{ github.repository }}:${{ matrix.version }}
           while ! curl -fs 127.0.0.1:8081/status > /dev/null; do
             echo "waiting for emqx"
@@ -75,6 +76,7 @@ jobs:
         if: matrix.version == '5.0'
         timeout-minutes: 1
         run: |
+          docker pull ghcr.io/${{ github.repository }}:${{ matrix.version }}
           docker run -d -p 18083:18083 --name emqx ghcr.io/${{ github.repository }}:${{ matrix.version }}
           while ! curl -fs 127.0.0.1:18083/status > /dev/null; do
             echo "waiting for emqx"
