@@ -9,13 +9,13 @@ RUN set -eu; \
     groupadd -r -g 1000 emqx; \
     useradd -r -m -u 1000 -g emqx emqx
 
-ENV EMQX_VERSION=4.4.15
+ENV EMQX_VERSION=4.4.16
 ENV OTP=otp24.3.4.2-1
 
 RUN set -eu; \
     arch=$(dpkg --print-architecture); \
-    if [ ${arch} = "amd64" ]; then sha256="14aef227fc0a0e7cb16bfd42cea40ec4670f37f8d0e5242611c7ee642020d653"; fi; \
-    if [ ${arch} = "arm64" ]; then sha256="9904da703e022cc04d5f31a27e802cab6a5a2a395d20314d8a8bd79b018d7458"; fi; \
+    if [ ${arch} = "amd64" ]; then sha256="901b76ea2bee68729b75280740ca31b1af5b358d331422d1653dc342ee830324"; fi; \
+    if [ ${arch} = "arm64" ]; then sha256="1224f53d0ee98390c286f3bbd9af2f294c2fa4ccb79342343d803fa234165c6e"; fi; \
     ID="$(sed -n '/^ID=/p' /etc/os-release | sed -r 's/ID=(.*)/\1/g' | sed 's/\"//g')"; \
     VERSION_ID="$(sed -n '/^VERSION_ID=/p' /etc/os-release | sed -r 's/VERSION_ID=(.*)/\1/g' | sed 's/\"//g')"; \
     pkg="emqx-${EMQX_VERSION}-${OTP}-${ID}${VERSION_ID}-${arch}.zip"; \
