@@ -14,11 +14,10 @@ defaults:
 
 jobs:
   main:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         version:
-          - '4.3'
           - '4.4'
           - '5.0'
 
@@ -33,17 +32,6 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ github.token }}
       - uses: docker/build-push-action@v3
-        if: matrix.version == '4.3'
-        with:
-          push: true
-          pull: true
-          no-cache: true
-          platforms: linux/amd64
-          tags: ghcr.io/${{ github.repository }}:${{ matrix.version }}
-          file: ${{ matrix.version }}/Dockerfile
-          context: ${{ matrix.version }}
-      - uses: docker/build-push-action@v3
-        if: matrix.version != '4.3'
         with:
           push: true
           pull: true
