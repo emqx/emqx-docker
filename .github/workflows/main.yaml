@@ -20,6 +20,7 @@ jobs:
         version:
           - '4.4'
           - '5.0'
+          - '5.1'
 
     steps:
       - uses: actions/checkout@v3
@@ -41,7 +42,7 @@ jobs:
           file: ${{ matrix.version }}/Dockerfile
           context: ${{ matrix.version }}
       - name: Check image
-        if: matrix.version != '5.0'
+        if: matrix.version == '4.4'
         timeout-minutes: 1
         run: |
           docker pull ghcr.io/${{ github.repository }}:${{ matrix.version }}
@@ -61,7 +62,7 @@ jobs:
           echo "================================================================"
           echo "emqx is running"
       - name: Check image
-        if: matrix.version == '5.0'
+        if: matrix.version != '4.4'
         timeout-minutes: 1
         run: |
           docker pull ghcr.io/${{ github.repository }}:${{ matrix.version }}
