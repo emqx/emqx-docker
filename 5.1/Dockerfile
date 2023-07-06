@@ -8,9 +8,9 @@ RUN set -eu; \
 RUN groupadd -r -g 1000 emqx; \
     useradd -r -m -u 1000 -g emqx emqx;
 
-ENV EMQX_VERSION=5.1.0
-ENV AMD64_SHA256=946d8a047c8863afa318abf41be4c265c205d86aa8e6401a39282f02eecbe481
-ENV ARM64_SHA256=9f9ffa019960a6d4a6d60ec0b0f7a45513e326df7667a166aef827d248054940
+ENV EMQX_VERSION=5.1.1
+ENV AMD64_SHA256=bbbf3e3be74d825a131d2af9b07a689b801c030af9add1f7bbaf46ed13dd96e7
+ENV ARM64_SHA256=90a981b3723cd45653281c1f40c2390149321b14d4fe005a3e3ed0815c460eac
 ENV LC_ALL=C.UTF-8 LANG=C.UTF-8
 
 RUN set -eu; \
@@ -20,14 +20,15 @@ RUN set -eu; \
     ID="$(sed -n '/^ID=/p' /etc/os-release | sed -r 's/ID=(.*)/\1/g' | sed 's/\"//g')"; \
     VERSION_ID="$(sed -n '/^VERSION_ID=/p' /etc/os-release | sed -r 's/VERSION_ID=(.*)/\1/g' | sed 's/\"//g')"; \
     pkg="emqx-${EMQX_VERSION}-${ID}${VERSION_ID}-${arch}.tar.gz"; \
-    curl -f -O -L https://www.emqx.com/en/downloads/broker/v${EMQX_VERSION}/${pkg} && \
-    echo "$sha256 *$pkg" | sha256sum -c && \
-    mkdir /opt/emqx && \
-    tar zxf $pkg -C /opt/emqx && \
-    chgrp -Rf emqx /opt/emqx && \
-    chmod -Rf g+w /opt/emqx && \
-    chown -Rf emqx /opt/emqx && \
-    ln -s /opt/emqx/bin/* /usr/local/bin/ && \
+    curl -f -O -L https://www.emqx.com/en/downloads/broker/v${EMQX_VERSION}/${pkg}; \
+    echo "$(sha256sum $pkg)"; \
+    echo "$sha256 *$pkg" | sha256sum -c; \
+    mkdir /opt/emqx; \
+    tar zxf $pkg -C /opt/emqx; \
+    chgrp -Rf emqx /opt/emqx; \
+    chmod -Rf g+w /opt/emqx; \
+    chown -Rf emqx /opt/emqx; \
+    ln -s /opt/emqx/bin/* /usr/local/bin/; \
     rm -f $pkg
 
 WORKDIR /opt/emqx
