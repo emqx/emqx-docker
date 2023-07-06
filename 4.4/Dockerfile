@@ -9,18 +9,19 @@ RUN set -eu; \
     groupadd -r -g 1000 emqx; \
     useradd -r -m -u 1000 -g emqx emqx
 
-ENV EMQX_VERSION=4.4.18
+ENV EMQX_VERSION=4.4.19
 ENV OTP=otp24.3.4.2-1
 
 RUN set -eu; \
     arch=$(dpkg --print-architecture); \
-    if [ ${arch} = "amd64" ]; then sha256="53712834a3cf209e488b97842ed9d6bae887e6e79ebaae3a0887018aab59b05b"; fi; \
-    if [ ${arch} = "arm64" ]; then sha256="5fe04b2a10fc5e43ee582b38ecd526480a44ae277f5e6aa68ccd85f45e76baad"; fi; \
+    if [ ${arch} = "amd64" ]; then sha256="bf4192c64c9006733b30f96fe99506a0a3af115c7073995a044cc0e60230675e"; fi; \
+    if [ ${arch} = "arm64" ]; then sha256="7cd27d5112380fd4d81029b10ba862a050b0bba8af1eb90aac669189fc3053c0"; fi; \
     ID="$(sed -n '/^ID=/p' /etc/os-release | sed -r 's/ID=(.*)/\1/g' | sed 's/\"//g')"; \
     VERSION_ID="$(sed -n '/^VERSION_ID=/p' /etc/os-release | sed -r 's/VERSION_ID=(.*)/\1/g' | sed 's/\"//g')"; \
     pkg="emqx-${EMQX_VERSION}-${OTP}-${ID}${VERSION_ID}-${arch}.zip"; \
     curl -f -O -L https://www.emqx.com/en/downloads/broker/${EMQX_VERSION}/${pkg}; \
-    echo "$sha256 *$pkg" | sha256sum -c || exit 1; \
+    echo "$(sha256sum $pkg)"; \
+    echo "$sha256 *$pkg" | sha256sum -c; \
     unzip -q -d /opt $pkg; \
     chgrp -Rf emqx /opt/emqx; \
     chmod -Rf g+w /opt/emqx; \
