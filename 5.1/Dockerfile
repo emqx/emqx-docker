@@ -21,7 +21,6 @@ RUN set -eu; \
     VERSION_ID="$(sed -n '/^VERSION_ID=/p' /etc/os-release | sed -r 's/VERSION_ID=(.*)/\1/g' | sed 's/\"//g')"; \
     pkg="emqx-${EMQX_VERSION}-${ID}${VERSION_ID}-${arch}.tar.gz"; \
     curl -f -O -L https://www.emqx.com/en/downloads/broker/v${EMQX_VERSION}/${pkg}; \
-    echo "$(sha256sum $pkg)"; \
     echo "$sha256 *$pkg" | sha256sum -c; \
     mkdir /opt/emqx; \
     tar zxf $pkg -C /opt/emqx; \
