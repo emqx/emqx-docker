@@ -8,9 +8,9 @@ RUN set -eu; \
 RUN groupadd -r -g 1000 emqx; \
     useradd -r -m -u 1000 -g emqx emqx;
 
-ENV EMQX_VERSION=5.1.1
-ENV AMD64_SHA256=bbbf3e3be74d825a131d2af9b07a689b801c030af9add1f7bbaf46ed13dd96e7
-ENV ARM64_SHA256=90a981b3723cd45653281c1f40c2390149321b14d4fe005a3e3ed0815c460eac
+ENV EMQX_VERSION=5.1.2
+ENV AMD64_SHA256=bd34a8cfcd816305b4fc8bfb67fb8a0a29dcf7bd2e391e79534bf7d94d62ffcd
+ENV ARM64_SHA256=02d281020403f55f9d5eac5a2ffbdaebc888aa8e4b92fce847f23541f2b0eae5
 ENV LC_ALL=C.UTF-8 LANG=C.UTF-8
 
 RUN set -eu; \
@@ -21,10 +21,10 @@ RUN set -eu; \
     VERSION_ID="$(sed -n '/^VERSION_ID=/p' /etc/os-release | sed -r 's/VERSION_ID=(.*)/\1/g' | sed 's/\"//g')"; \
     pkg="emqx-${EMQX_VERSION}-${ID}${VERSION_ID}-${arch}.tar.gz"; \
     curl -f -O -L https://www.emqx.com/en/downloads/broker/v${EMQX_VERSION}/${pkg}; \
-    echo "$(sha256sum $pkg)"; \
     echo "$sha256 *$pkg" | sha256sum -c; \
     mkdir /opt/emqx; \
     tar zxf $pkg -C /opt/emqx; \
+    find /opt/emqx -name 'swagger*.js.map' -exec rm {} +; \
     chgrp -Rf emqx /opt/emqx; \
     chmod -Rf g+w /opt/emqx; \
     chown -Rf emqx /opt/emqx; \

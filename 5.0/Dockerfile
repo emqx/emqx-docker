@@ -24,6 +24,7 @@ RUN set -eu; \
     echo "$sha256 *$pkg" | sha256sum -c && \
     mkdir /opt/emqx && \
     tar zxf $pkg -C /opt/emqx && \
+    find /opt/emqx -name 'swagger*.js.map' -exec rm {} +; \
     chgrp -Rf emqx /opt/emqx && \
     chmod -Rf g+w /opt/emqx && \
     chown -Rf emqx /opt/emqx && \
