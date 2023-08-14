@@ -75,8 +75,8 @@ jobs:
             echo "emqx command not working"
             exit 1
           fi
-          if ! docker exec -i emqx emqx_ctl status; then
-            echo "emqx_ctl command not working"
+          if ! docker exec -i emqx emqx ctl status; then
+            echo "emqx ctl command not working"
             exit 1
           fi
           echo "================================================================"
