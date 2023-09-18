@@ -18,9 +18,9 @@ jobs:
     strategy:
       matrix:
         version:
-          - '4.4'
           - '5.0'
           - '5.1'
+          - '5.2'
 
     steps:
       - uses: actions/checkout@v3
@@ -42,27 +42,6 @@ jobs:
           file: ${{ matrix.version }}/Dockerfile
           context: ${{ matrix.version }}
       - name: Check image
-        if: matrix.version == '4.4'
-        timeout-minutes: 1
-        run: |
-          docker pull ghcr.io/${{ github.repository }}:${{ matrix.version }}
-          docker run -d -p 8081:8081 --name emqx ghcr.io/${{ github.repository }}:${{ matrix.version }}
-          while ! curl -fs 127.0.0.1:8081/status > /dev/null; do
-            echo "waiting for emqx"
-            sleep 1
-          done
-          if ! docker exec -i emqx emqx ping; then
-            echo "emqx command not working"
-            exit 1
-          fi
-          if ! docker exec -i emqx emqx_ctl status; then
-            echo "emqx_ctl command not working"
-            exit 1
-          fi
-          echo "================================================================"
-          echo "emqx is running"
-      - name: Check image
-        if: matrix.version != '4.4'
         timeout-minutes: 1
         run: |
           docker pull ghcr.io/${{ github.repository }}:${{ matrix.version }}
