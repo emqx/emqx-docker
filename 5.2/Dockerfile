@@ -2,7 +2,7 @@ FROM debian:11-slim
 
 RUN set -eu; \
     apt-get update; \
-    apt-get install -y --no-install-recommends curl ca-certificates procps; \
+    apt-get install -y --no-install-recommends ca-certificates procps; \
     rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -r -g 1000 emqx; \
@@ -14,6 +14,9 @@ ENV ARM64_SHA256=b4991f1f7d44963ad7ff0fd65234f9ae39298ea43d9fa8b009035d649e4c17d
 ENV LC_ALL=C.UTF-8 LANG=C.UTF-8
 
 RUN set -eu; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends curl; \
+    rm -rf /var/lib/apt/lists/*; \
     arch=$(dpkg --print-architecture); \
     if [ ${arch} = "amd64" ]; then sha256="$AMD64_SHA256"; fi; \
     if [ ${arch} = "arm64" ]; then sha256="$ARM64_SHA256"; fi; \
