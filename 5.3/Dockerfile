@@ -1,13 +1,5 @@
 FROM debian:11-slim
 
-RUN set -eu; \
-    apt-get update; \
-    apt-get install -y --no-install-recommends ca-certificates procps; \
-    rm -rf /var/lib/apt/lists/*
-
-RUN groupadd -r -g 1000 emqx; \
-    useradd -r -m -u 1000 -g emqx emqx;
-
 ENV EMQX_VERSION=5.3.0
 ENV AMD64_SHA256=c534711d2a2b278e93dea33c2019f6e3b647f372a67e7a987ed7b0ca0984394d
 ENV ARM64_SHA256=1aa299f0ff04ed08af1fe4de37adbe888616ae203b7e38e81ef1f78b6f10527b
@@ -15,8 +7,7 @@ ENV LC_ALL=C.UTF-8 LANG=C.UTF-8
 
 RUN set -eu; \
     apt-get update; \
-    apt-get install -y --no-install-recommends curl; \
-    rm -rf /var/lib/apt/lists/*; \
+    apt-get install -y --no-install-recommends ca-certificates procps curl; \
     arch=$(dpkg --print-architecture); \
     if [ ${arch} = "amd64" ]; then sha256="$AMD64_SHA256"; fi; \
     if [ ${arch} = "arm64" ]; then sha256="$ARM64_SHA256"; fi; \
@@ -28,12 +19,15 @@ RUN set -eu; \
     mkdir /opt/emqx; \
     tar zxf $pkg -C /opt/emqx; \
     find /opt/emqx -name 'swagger*.js.map' -exec rm {} +; \
+    groupadd -r -g 1000 emqx; \
+    useradd -r -m -u 1000 -g emqx emqx; \
     chgrp -Rf emqx /opt/emqx; \
     chmod -Rf g+w /opt/emqx; \
     chown -Rf emqx /opt/emqx; \
     ln -s /opt/emqx/bin/* /usr/local/bin/; \
     rm -f $pkg; \
-    apt-get purge -y --auto-remove curl
+    apt-get purge -y --auto-remove curl; \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /opt/emqx
 
