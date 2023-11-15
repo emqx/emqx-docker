@@ -1,12 +1,12 @@
 FROM debian:11-slim
 
-ENV EMQX_VERSION=5.3.0
-ENV AMD64_SHA256=c534711d2a2b278e93dea33c2019f6e3b647f372a67e7a987ed7b0ca0984394d
-ENV ARM64_SHA256=1aa299f0ff04ed08af1fe4de37adbe888616ae203b7e38e81ef1f78b6f10527b
+ENV EMQX_VERSION=5.3.1
+ENV AMD64_SHA256=1d13906b397e86e7822133d27d124bd06d714002293480047d5ac0e22d193fe2
+ENV ARM64_SHA256=e8aae039125194e9edb5dfbe8cf5c3eaf0e4bd2b9610fa97118d344115e31d2c
 ENV LC_ALL=C.UTF-8 LANG=C.UTF-8
 
 RUN set -eu; \
-    apt-get update; \
+    apt-get update --allow-unauthenticated; \
     apt-get install -y --no-install-recommends ca-certificates procps curl; \
     arch=$(dpkg --print-architecture); \
     if [ ${arch} = "amd64" ]; then sha256="$AMD64_SHA256"; fi; \
