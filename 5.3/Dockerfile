@@ -6,7 +6,7 @@ ENV ARM64_SHA256=e8aae039125194e9edb5dfbe8cf5c3eaf0e4bd2b9610fa97118d344115e31d2
 ENV LC_ALL=C.UTF-8 LANG=C.UTF-8
 
 RUN set -eu; \
-    apt-get update --allow-unauthenticated; \
+    apt-get update; \
     apt-get install -y --no-install-recommends ca-certificates procps curl; \
     arch=$(dpkg --print-architecture); \
     if [ ${arch} = "amd64" ]; then sha256="$AMD64_SHA256"; fi; \
