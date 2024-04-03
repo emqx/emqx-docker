@@ -1,8 +1,8 @@
-FROM debian:11-slim
+FROM debian:12-slim
 
-ENV EMQX_VERSION=5.5.1
-ENV AMD64_SHA256=8bac2886987a632aab1c738aa3de28684b415d3b1e1f9489b458c819254673a6
-ENV ARM64_SHA256=8b962ad8beea50fb92dc0b93d2ab8a5064752147b70bbf46fd221bc4cc29c32d
+ENV EMQX_VERSION=5.6.0
+ENV AMD64_SHA256=d04535234c91dada9ae794247ccc70139c980c24a2f4609e8253c95e75b992ec
+ENV ARM64_SHA256=c40a6f7a70fce3874a4db804cb908f808a0119d77d1db324bdf3050b7429f31d
 ENV LC_ALL=C.UTF-8 LANG=C.UTF-8
 
 RUN set -eu; \
@@ -11,8 +11,7 @@ RUN set -eu; \
     arch=$(dpkg --print-architecture); \
     if [ ${arch} = "amd64" ]; then sha256="$AMD64_SHA256"; fi; \
     if [ ${arch} = "arm64" ]; then sha256="$ARM64_SHA256"; fi; \
-    ID="$(sed -n '/^ID=/p' /etc/os-release | sed -r 's/ID=(.*)/\1/g' | sed 's/\"//g')"; \
-    VERSION_ID="$(sed -n '/^VERSION_ID=/p' /etc/os-release | sed -r 's/VERSION_ID=(.*)/\1/g' | sed 's/\"//g')"; \
+    . /etc/os-release; \
     pkg="emqx-${EMQX_VERSION}-${ID}${VERSION_ID}-${arch}.tar.gz"; \
     curl -f -O -L https://www.emqx.com/en/downloads/broker/v${EMQX_VERSION}/${pkg}; \
     echo "$sha256 *$pkg" | sha256sum -c; \
@@ -26,6 +25,7 @@ RUN set -eu; \
     chown -R emqx:emqx /opt/emqx/log /opt/emqx/data /opt/emqx/plugins; \
     rm -f $pkg; \
     apt-get purge -y --auto-remove curl; \
+    apt-get clean; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 WORKDIR /opt/emqx
