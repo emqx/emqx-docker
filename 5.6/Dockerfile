@@ -1,8 +1,8 @@
 FROM debian:12-slim
 
-ENV EMQX_VERSION=5.6.0
-ENV AMD64_SHA256=d04535234c91dada9ae794247ccc70139c980c24a2f4609e8253c95e75b992ec
-ENV ARM64_SHA256=c40a6f7a70fce3874a4db804cb908f808a0119d77d1db324bdf3050b7429f31d
+ENV EMQX_VERSION=5.6.1
+ENV AMD64_SHA256=a5be37660bfe6130bc159b934ed98ffcb9bef5519765491b4ed38d08ba304538
+ENV ARM64_SHA256=3f7f9b10d313f760af43e0a54cba2af4eb23ad3864b439196cb8b2903baf5651
 ENV LC_ALL=C.UTF-8 LANG=C.UTF-8
 
 RUN set -eu; \
@@ -21,11 +21,8 @@ RUN set -eu; \
     ln -s /opt/emqx/bin/* /usr/local/bin/; \
     groupadd -r -g 1000 emqx; \
     useradd -r -m -u 1000 -g emqx emqx; \
-    mkdir -p /opt/emqx/log /opt/emqx/data /opt/emqx/plugins; \
-    chown -R emqx:emqx /opt/emqx/log /opt/emqx/data /opt/emqx/plugins; \
+    chown -R emqx:emqx /opt/emqx; \
     rm -f $pkg; \
-    apt-get purge -y --auto-remove curl; \
-    apt-get clean; \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 WORKDIR /opt/emqx
