@@ -18,7 +18,6 @@ jobs:
     strategy:
       matrix:
         version:
-          - '5.7'
           - '5.8'
 
     steps:
